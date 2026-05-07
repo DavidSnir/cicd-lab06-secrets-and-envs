@@ -1,0 +1,38 @@
+name: Auth CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    env:
+      # TODO: add JWT_SECRET from secrets
+      # TODO: add NODE_ENV from vars
+      # HINT: secrets are referenced with ${{ secrets.NAME }}
+      # HINT: vars are referenced with ${{ vars.NAME }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Show env behavior
+        run: |
+          echo "NODE_ENV is: $NODE_ENV"
+          echo "JWT_SECRET is: $JWT_SECRET"
+
+      - name: Run tests
+        run: npm test
