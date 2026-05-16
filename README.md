@@ -65,9 +65,8 @@ Needs a reachable MongoDB (Atlas via `MONGO_HOST`, or adjust the URI for local).
 
 ## Test
 
-In-memory Mongo, no external DB needed.
+In-memory Mongo, no external DB needed. Test deps included in `requirements.txt`.
 
 ```bash
-pip install -r requirements-dev.txt
 pytest
 ```

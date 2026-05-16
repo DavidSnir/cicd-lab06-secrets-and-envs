@@ -19,7 +19,7 @@ jobs:
           cache: pip
 
       - name: Install deps
-        run: pip install -r requirements-dev.txt
+        run: pip install -r requirements.txt
 
       - name: Run pytest
         env:
