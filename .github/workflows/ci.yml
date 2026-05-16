@@ -41,6 +41,24 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
 
+      - name: Check required secrets
+        env:
+          MONGO_USER: ${{ secrets.MONGO_USER }}
+          MONGO_PASS: ${{ secrets.MONGO_PASS }}
+          MONGO_HOST: ${{ secrets.MONGO_HOST }}
+          MONGO_DB: ${{ secrets.MONGO_DB }}
+        run: |
+          missing=""
+          for v in MONGO_USER MONGO_PASS MONGO_HOST MONGO_DB; do
+            if [ -z "${!v}" ]; then missing="$missing $v"; fi
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repo secrets:$missing"
+            echo "Set them: Settings -> Secrets and variables -> Actions"
+            exit 1
+          fi
+          echo "All Mongo secrets present"
+
       - name: Start live server in background
         env:
           APP_ENV: DEV
