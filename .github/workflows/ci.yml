@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  APP_ENV: DEV
+  PORT: "3000"
+  MONGO_USER: ${{ secrets.MONGO_USER }}
+  MONGO_PASS: ${{ secrets.MONGO_PASS }}
+  MONGO_HOST: ${{ secrets.MONGO_HOST }}
+  MONGO_DB: ${{ secrets.MONGO_DB }}
+
+jobs:
+  unit:
+    name: Unit tests (in-memory Mongo)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - name: Run pytest
+        env:
+          APP_ENV: TEST
+        run: pytest
+
+  live:
+    name: Live server test (Atlas)
+    runs-on: ubuntu-latest
+    needs: unit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - name: Start server
+        run: |
+          python -m uvicorn app.main:app --port "$PORT" --no-access-log > server.log 2>&1 &
+          echo $! > server.pid
+      - name: Run live test
+        run: python scripts/live_test.py
+      - name: Stop server
+        if: always()
+        run: |
+          if [ -f server.pid ]; then kill "$(cat server.pid)" || true; fi
+          echo "--- server.log ---"
+          cat server.log || true
