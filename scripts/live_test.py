@@ -11,7 +11,7 @@ Exercises the full user lifecycle: health -> status -> create -> read ->
 update -> delete -> confirm-gone. Used to validate the pipeline works
 before lab instructions are written.
 
-Run locally — terminal 1:
+Run locally — terminal 1: 
 
     python -m uvicorn app.main:app --port 3000
 
